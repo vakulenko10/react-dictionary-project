@@ -118,7 +118,7 @@ const MainComponent = () => {
       <div className={`rounded-lg p-3 my-1 ${theme == 'light'? 'bg-slate-200':'bg-slate-700 text-white'} box-border overflow-hidden`}>
         {/* Render your fetched data here */}
         {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-        {data && data.map((item, index) => item && <div><div>{renderWordData(item)}</div>
+        {data && data.map((item, index) => item && <div key={index}><div key={index}>{renderWordData(item)}</div>
         {findWordMeanings(item) && renderMeanings(findWordMeanings(item))}
         </div>)
         }
