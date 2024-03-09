@@ -5,7 +5,14 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState('light');
-
+    const [showCopied, setShowCopied] = useState(false);
+    const showCopyAlert = () => {
+      setShowCopied(true);
+      
+      setTimeout(() => {
+        setShowCopied(false);
+      }, 6000); // 3000 milliseconds = 3 seconds
+    };
     useEffect(() => {
       const preferredTheme = localStorage.getItem('theme');
   
@@ -20,7 +27,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, showCopied, showCopyAlert }}>
       {children}
     </ThemeContext.Provider>
   );
