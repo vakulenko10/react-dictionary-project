@@ -11,7 +11,7 @@ const MainComponent = () => {
 
   const findWordMeanings = (obj) => {
     if (obj && obj.meanings && Array.isArray(obj.meanings)) {
-      return obj.meanings.flatMap(item => item.definitions || []);
+      return obj.meanings
     }
     return [];
   };
@@ -49,7 +49,7 @@ const MainComponent = () => {
             (key != "audio")?<li key={key}>
             <strong>{key}: </strong>
             {value}
-          </li>:<li className='flex' key={key}><audio controls key={key} className='grow'><source key={key} src={value} type="audio/mpeg" /></audio></li>
+          </li>:<li className='flex' key={key}><audio controls key={key}><source key={key} src={value} type="audio/mpeg" /></audio></li>
         ))}
         </ul>
     </motion.div>)
@@ -64,8 +64,14 @@ const MainComponent = () => {
         // Iterate over object keys
         for (let key in object) {
           // Check if the key is one of the needed properties
-          if (neededProps.includes(key) && object[key].length > 0) {
-            result[key] = object[key]; // Store the value
+          // if(key == 'synonyms' || key == 'antonyms'){
+          //   result[key] = object[key];
+          //   // console.log(typeof key)
+          //   console.log("object[key]:",object[key])
+          // }
+          if (neededProps.includes(key) && object[key] ) {
+            
+            result[key] = object[key]; 
           } else if (typeof object[key] === 'object') {
             // If the value is an object, recursively search for the needed property
             searchProperties(object[key]);
@@ -76,23 +82,25 @@ const MainComponent = () => {
     searchProperties(obj);
     return result;
   };
-    const renderMeanings = (meanings) => {
-        return meanings.map((meaning, index) => (
-        <motion.div key={index} className={` break-words text-wrap  relative flex flex-col p-2 flex-wrap meaning-card w-full ${theme == 'light'? 'bg-[#b8c3d1fe]':'bg-slate-600'} rounded-lg md:p-5 w-full my-3`} initial={{ opacity: 0, y: 20 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.5, delay: index * 0.1 }} >
-            <h3>Meaning {index + 1}</h3>
-            <ul>
-            {Object.entries(findMeaningData(meaning)).map(([key, value]) => (
-                <li key={key}>
-                <strong>{key}: </strong>
-                {value}
-                </li>
-            ))}
-            </ul>
-        </motion.div>
-        ));
-    };
+  const renderMeanings = (meanings) => {
+    return meanings.map((meaning, index) => (
+      <motion.div key={index} className={` break-words text-wrap  relative flex flex-col p-2 flex-wrap meaning-card w-full ${theme == 'light'? 'bg-[#b8c3d1fe]':'bg-slate-600'} rounded-lg md:p-5 w-full my-3`} initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}} 
+      transition={{ duration: 0.5, delay: index * 0.1 }} >
+        <h3>Meaning {index + 1}</h3>
+        <ul>
+          {Object.entries(findMeaningData(meaning)).map(([key, value]) => (
+            <li key={key}>
+              <strong>{key}: </strong>
+              {Array.isArray(value) ? (
+                <span>{value.map((word, index) => <span key={index}>{word}{index < value.length - 1 ? ', ' : ''}</span>)}</span>
+              ) : value}
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    ));
+  };
   const fetchData = async () => {
     const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
 
@@ -127,9 +135,9 @@ const MainComponent = () => {
       <div className={`rounded-lg box-border overflow-hidden`}>
         {/* Render your fetched data here */}
         {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-        {data && data.map((item, index) => item && <div className={`my-10  py-10 px-3  rounded-lg ${theme == 'light'? 'bg-slate-300':'bg-slate-700 text-white'} `} key={index}><div key={index}>{renderWordData(item)}</div>
+        {data && data.map((item, index) => item && <motion.div initial={{opacity: 0, x: -20}} whileInView={{opacity:1, x:0}} className={`my-10  py-10 px-3  rounded-lg ${theme == 'light'? 'bg-slate-300':'bg-slate-700 text-white'} `} key={index}><div key={index}>{renderWordData(item)}</div>
         {findWordMeanings(item) && renderMeanings(findWordMeanings(item))}
-        </div>)
+        </motion.div>)
         }
         {/* Render specific properties */}
         <div>
