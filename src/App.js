@@ -1,16 +1,16 @@
-import logo from './logo.svg';
 import './App.css';
-import Searchbar from './Components/Searchbar';
+import Header from './Components/Header';
+import MainComponent from './Components/MainComponent';
+import { useTheme } from './Components/themeContext';
+
 
 function App() {
+  const {theme, toggleTheme } = useTheme();
   return (
-    <div className="App">
-      <header className="App-header">
-        
-      </header>
+    <div className={`App min-h-screen ${theme == 'light'? 'bg-slate-200':'bg-slate-800 text-white'}`}>
+      <Header />
       <main>
-        <Searchbar/>
-        fkasd';m
+        <MainComponent/>
       </main>
     </div>
   );
