@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import Container from './Container';
 import { useTheme } from './themeContext';
-
+import { motion, useInView  } from 'framer-motion';
 const MainComponent = () => {
+  const ref = useRef(null)
+  const isInView = useInView(ref)
   const [data, setData] = useState(null);
   const [word, setWord] = useState('example');
 
@@ -38,7 +40,10 @@ const MainComponent = () => {
   };
 
   const renderWordData = (obj) =>{
-    return (<div className='flex'>
+    return (<motion.div 
+      initial={{ opacity: 0, x: 20 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.5, delay:  0.5 }} className={`flex ${theme == "light"?'bg-slate-300': 'bg-slate-600'} rounded p-5`}>
         <ul>
         {Object.entries(findWordData(obj)).map(([key, value]) => (
             (key != "audio")?<li key={key}>
@@ -47,7 +52,7 @@ const MainComponent = () => {
           </li>:<li className='flex' key={key}><audio controls key={key} className='grow'><source key={key} src={value} type="audio/mpeg" /></audio></li>
         ))}
         </ul>
-    </div>)
+    </motion.div>)
   }
   const findMeaningData = (obj) => {
     const neededProps = ["word", "text", "audio", "partOfSpeech", "definition", "synonyms", "antonyms"];
@@ -73,9 +78,11 @@ const MainComponent = () => {
   };
     const renderMeanings = (meanings) => {
         return meanings.map((meaning, index) => (
-        <div key={index} className={` break-words text-wrap  relative flex flex-col p-2 flex-wrap meaning-card w-full ${theme == 'light'? 'bg-slate-300':'bg-slate-600'} rounded-lg md:p-5 w-full my-3`}>
+        <motion.div key={index} className={` break-words text-wrap  relative flex flex-col p-2 flex-wrap meaning-card w-full ${theme == 'light'? 'bg-[#b8c3d1fe]':'bg-slate-600'} rounded-lg md:p-5 w-full my-3`} initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.5, delay: index * 0.1 }} >
             <h3>Meaning {index + 1}</h3>
-            <ul >
+            <ul>
             {Object.entries(findMeaningData(meaning)).map(([key, value]) => (
                 <li key={key}>
                 <strong>{key}: </strong>
@@ -83,7 +90,7 @@ const MainComponent = () => {
                 </li>
             ))}
             </ul>
-        </div>
+        </motion.div>
         ));
     };
   const fetchData = async () => {
@@ -110,15 +117,17 @@ const MainComponent = () => {
   const {theme, toggleTheme} = useTheme();
   return (
     <Container>
-    <div className={`overflow-hidden w-full box-border break-words text-wrap md:px-10 ${theme == 'light'? 'bg-slate-200':'bg-slate-800 text-white'}  rounded py-10`}>
+    <motion.div ref={ref} initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.5, delay:  0.8 }} exit={{opacity: 0, y: 0 }} className={`overflow-hidden w-full box-border break-words text-wrap md:px-10 ${theme == 'light'? 'bg-slate-200':'bg-slate-800 text-white'}  rounded py-10`}>
       <div className='inline'>
-        <label htmlFor="word">Enter Word:</label>
-        <input id="word" type="text" value={word} className={`p-3 border-[1px] rounded  out  ${theme == 'light'? 'bg-slate-200 border-[#000]':'bg-slate-800 border-[#fff] text-white'}`} onChange={handleWordChange} />
+        <label htmlFor="word">Enter Word: </label>
+        <input id="word" type="text" value={word} className={`px-3 py-1 border-[1px] rounded  out  ${theme == 'light'? 'bg-slate-200 border-[#000]':'bg-slate-800 border-[#fff] text-white'}`} onChange={handleWordChange} />
       </div>
-      <div className={`rounded-lg p-3 my-1 ${theme == 'light'? 'bg-slate-200':'bg-slate-700 text-white'} box-border overflow-hidden`}>
+      <div className={`rounded-lg box-border overflow-hidden`}>
         {/* Render your fetched data here */}
         {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-        {data && data.map((item, index) => item && <div key={index}><div key={index}>{renderWordData(item)}</div>
+        {data && data.map((item, index) => item && <div className={`my-10  py-10 px-3  rounded-lg ${theme == 'light'? 'bg-slate-300':'bg-slate-700 text-white'} `} key={index}><div key={index}>{renderWordData(item)}</div>
         {findWordMeanings(item) && renderMeanings(findWordMeanings(item))}
         </div>)
         }
@@ -128,7 +137,7 @@ const MainComponent = () => {
         {/* {data && findWordMeanings(data).length > 0 && renderMeanings(findWordMeanings(data))} */}
         </div>
       </div>
-    </div></Container>
+    </motion.div></Container>
   );
 };
 
