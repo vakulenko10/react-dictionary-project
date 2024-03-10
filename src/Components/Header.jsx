@@ -9,7 +9,7 @@ const {theme, toggleTheme} = useTheme();
     <div className={`${theme == 'light'? 'bg-slate-300':'bg-slate-700 text-white'}`}>
         <Container>
             <div className='flex py-5 px-3 md:px-10 justify-between'>
-                <h1>translatePlease!</h1>
+                <h1>explainPlease!</h1>
 
                 <ToggleThemeBtn />
             </div>
